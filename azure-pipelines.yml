@@ -95,14 +95,14 @@ stages:
       inputs:
         targetType: inline
         script: |
-            $sourceDestination = "$(System.DefaultWorkingDirectory)\PDS.ViewYourFunding.DocumentGenerator.Services\Implementations\Resources\"
-            Write-Host "Copying aspose license from $(downloadAsposeLicense.secureFilePath) to target '$sourceDestination\Aspose.Total.lic'"
+            $sourceDestination = "$(System.DefaultWorkingDirectory)/PDS.ViewYourFunding.DocumentGenerator.Services/Implementations/Resources"
+            Write-Host "Copying aspose license from $(downloadAsposeLicense.secureFilePath) to target '$sourceDestination/Aspose.Total.lic'"
 
             if(-not (Test-Path -Path "$sourceDestination")) {
               New-Item -Type Directory -Path "$sourceDestination"
             }
 
-            Copy-Item -Path "$(downloadAsposeLicense.secureFilePath)" -Destination "$sourceDestination\Aspose.Total.lic"
+            Copy-Item -Path "$(downloadAsposeLicense.secureFilePath)" -Destination "$sourceDestination/Aspose.Total.lic"
             Write-Host "File copied!"
     #Step 3 - Set up .NET SDK
     - task: UseDotNet@2
@@ -159,14 +159,14 @@ stages:
       inputs:
         targetType: inline
         script: |
-            $sourceDestination = "$(System.DefaultWorkingDirectory)\PDS.ViewYourFunding.DocumentGenerator.Services\Implementations\Resources\"
-            Write-Host "Copying aspose license from $(downloadAsposeLicense.secureFilePath) to target '$sourceDestination\Aspose.Total.lic'"
+            $sourceDestination = "$(System.DefaultWorkingDirectory)/PDS.ViewYourFunding.DocumentGenerator.Services/Implementations/Resources"
+            Write-Host "Copying aspose license from $(downloadAsposeLicense.secureFilePath) to target '$sourceDestination/Aspose.Total.lic'"
 
             if(-not (Test-Path -Path "$sourceDestination")) {
               New-Item -Type Directory -Path "$sourceDestination"
             }
 
-            Copy-Item -Path "$(downloadAsposeLicense.secureFilePath)" -Destination "$sourceDestination\Aspose.Total.lic"
+            Copy-Item -Path "$(downloadAsposeLicense.secureFilePath)" -Destination "$sourceDestination/Aspose.Total.lic"
             Write-Host "File copied!"
     # Step 3: Build the Docker image
     - task: Docker@2
@@ -210,14 +210,14 @@ stages:
       inputs:
         targetType: inline
         script: |
-            $sourceDestination = "$(System.DefaultWorkingDirectory)\PDS.ViewYourFunding.DocumentGenerator.Services\Implementations\Resources\"
-            Write-Host "Copying aspose license from $(downloadAsposeLicense.secureFilePath) to target '$sourceDestination\Aspose.Total.lic'"
+            $sourceDestination = "$(System.DefaultWorkingDirectory)/PDS.ViewYourFunding.DocumentGenerator.Services/Implementations/Resources"
+            Write-Host "Copying aspose license from $(downloadAsposeLicense.secureFilePath) to target '$sourceDestination/Aspose.Total.lic'"
 
             if(-not (Test-Path -Path "$sourceDestination")) {
               New-Item -Type Directory -Path "$sourceDestination"
             }
 
-            Copy-Item -Path "$(downloadAsposeLicense.secureFilePath)" -Destination "$sourceDestination\Aspose.Total.lic"
+            Copy-Item -Path "$(downloadAsposeLicense.secureFilePath)" -Destination "$sourceDestination/Aspose.Total.lic"
             Write-Host "File copied!"
     # Step 3: Build the Docker image
     - task: Docker@2
@@ -284,14 +284,14 @@ stages:
       inputs:
         targetType: inline
         script: |
-            $sourceDestination = "$(System.DefaultWorkingDirectory)\PDS.ViewYourFunding.DocumentGenerator.Services\Implementations\Resources\"
-            Write-Host "Copying aspose license from $(downloadAsposeLicense.secureFilePath) to target '$sourceDestination\Aspose.Total.lic'"
+            $sourceDestination = "$(System.DefaultWorkingDirectory)/PDS.ViewYourFunding.DocumentGenerator.Services/Implementations/Resources"
+            Write-Host "Copying aspose license from $(downloadAsposeLicense.secureFilePath) to target '$sourceDestination/Aspose.Total.lic'"
 
             if(-not (Test-Path -Path "$sourceDestination")) {
               New-Item -Type Directory -Path "$sourceDestination"
             }
 
-            Copy-Item -Path "$(downloadAsposeLicense.secureFilePath)" -Destination "$sourceDestination\Aspose.Total.lic"
+            Copy-Item -Path "$(downloadAsposeLicense.secureFilePath)" -Destination "$sourceDestination/Aspose.Total.lic"
             Write-Host "File copied!"
     #Step 3 - Set up .NET SDK
     - task: UseDotNet@2
