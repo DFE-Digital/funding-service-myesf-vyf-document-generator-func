@@ -1,0 +1,968 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "resourceEnvironmentName": {
+      "type": "string",
+      "metadata": {
+        "description": "Short name of the environment. Used for the name of resources created."
+      }
+    },
+    "serviceName": {
+      "type": "string",
+      "metadata": {
+        "description": "Short name of the service. Used for the name of resources created."
+      }
+    },
+    "aspSize": {
+      "type": "string",
+      "defaultValue": "1"
+    },
+    "aspInstances": {
+      "type": "int",
+      "defaultValue": 1
+    },
+    "aspTier": {
+      "type": "string",
+      "defaultValue": "Basic"
+    },
+    "sharedResourceGroupName": {
+      "type": "string"
+    },
+    "sharedAppInsightsName": {
+      "type": "string"
+    },
+    "sharedStorageAccountName": {
+      "type": "string"
+    },
+    "sharedCosmosDbName": {
+      "type": "string"
+    },
+    "sharedServiceBusName": {
+      "type": "string"
+    },
+    "SharedKeyVaultName": {
+      "type": "string"
+    },
+    "serviceBusAccessKeyName": {
+      "type": "string"
+    },
+    "queueName": {
+      "type": "string"
+    },
+    "baseSiteUrl": {
+      "type": "string"
+    },    
+    "destinationStorage": {
+      "type": "string",
+      "defaultValue": "OneDrive"
+    },
+    "blobStorage_ConnectionString": {
+      "type": "string"
+    },
+    "blobStorage_ContainerName": {
+      "type": "string",
+      "defaultValue": "generatedpdfs"
+    },
+    "oneDrive_ClientId": {
+      "type": "string"
+    },
+    "oneDrive_ClientSecret": {
+      "type": "string"
+    },
+    "oneDrive_RefreshToken": {
+      "type": "string"
+    },
+    "oneDrive_RedirectUri": {
+      "type": "string"
+    },
+    "oneDrive_RootPath": {
+      "type": "string",
+      "defaultValue": "/Documents/"
+    },
+    "documentGeneratorScheduleTriggerTime": {
+      "type": "string",
+      "defaultValue": "*/2 * * * *"
+    },
+    "secretsPermissions": {
+      "defaultValue": [
+        "list",
+        "get"
+      ],
+      "type": "array",
+      "metadata": {
+        "description": "Specifies the permissions to secrets in the vault. Valid values are: all, get, list, set, delete, backup, restore, recover, and purge."
+      }
+    },
+    "processingRunSizeComparison": {
+      "type": "int",
+      "defaultValue": 10
+    },
+    "keyVaultSecretName": {
+      "type": "string",
+      "defaultValue": "FileShareStorageCompareConnectionString"
+    },
+    "filteredFundingStreamsFundings": {
+      "type": "string",
+      "defaultValue": "1619,LAREC"
+    },
+    "filteredVariationsProviderFundings": {
+      "type": "string",
+      "defaultValue": "AuthorityFieldUpdated,EstablishmentNumberFieldUpdated,DfeEstablishmentNumberFieldUpdated,NameFieldUpdated,LACodeFieldUpdated,FundingUpdated,CalculationValuesUpdated,URNFieldUpdated,DateOpenedFieldUpdated,PhaseOfEducationFieldUpdated,ProviderTypeFieldUpdated,ProviderStatusFieldUpdated,IndicativeToLive"
+    },
+    "filteredVariationsFunding": {
+      "type": "string",
+      "defaultValue": "AuthorityFieldUpdated,EstablishmentNumberFieldUpdated,DfeEstablishmentNumberFieldUpdated,NameFieldUpdated,LACodeFieldUpdated,FundingUpdated,CalculationValuesUpdated,URNFieldUpdated,DateOpenedFieldUpdated,PhaseOfEducationFieldUpdated,ProviderTypeFieldUpdated,ProviderStatusFieldUpdated,IndicativeToLive"
+    },
+    "nonRelationalDbCosmosDbConfigurationFundingCollection": {
+      "type": "string",
+      "defaultValue": "funding"
+    },
+    "nonRelationalDbCosmosDbConfigurationProviderFundingCollection": {
+      "type": "string",
+      "defaultValue": "providerfunding"
+    },
+    "filteredFundingStreamsProviderFundings": {
+      "type": "string",
+      "defaultValue": "GAG,NMSS,1416,1619,PNA"
+    },
+    "filteredFundingReasonGroupTypeCodes": {
+      "type": "string",
+      "defaultValue": "Information:LocalAuthority,Contracting:LocalAuthoritySsf"
+    },
+    "parallelRunBatchSize": {
+      "type": "string",
+      "defaultValue": "10"
+    },
+    "processingBatchSize": {
+      "type": "string",
+      "defaultValue": "4000"
+    }
+  },
+  "variables": {
+    "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/funding-platform-building-blocks/master/templates/",
+    "resourceNamePrefix": "[toLower(concat('pds-', parameters('resourceEnvironmentName'),'-', parameters('serviceName')))]",
+    "functionAppName": "[concat(variables('resourceNamePrefix'), 'wkr-fa')]",
+    "appServicePlanName": "[concat(variables('resourceNamePrefix'), 'wkr-asp')]"
+  },
+  "resources": [
+    {
+      "apiVersion": "2017-05-10",
+      "name": "app-service-plan",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'app-service-plan.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "appServicePlanName": {
+            "value": "[variables('appServicePlanName')]"
+          },
+          "aspSize": {
+            "value": "[parameters('aspSize')]"
+          },
+          "aspInstances": {
+            "value": "[parameters('aspInstances')]"
+          },
+          "nonASETier": {
+            "value": "[parameters('aspTier')]"
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "function-app",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'function-app.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "functionAppName": {
+            "value": "[variables('functionAppName')]"
+          },
+          "appServicePlanName": {
+            "value": "[variables('appServicePlanName')]"
+          },
+          "appServicePlanResourceGroup": {
+            "value": "[resourceGroup().name]"
+          },
+          "functionAppAppSettings": {
+            "value": [
+              {
+                "name": "Environment",
+                "value": "[parameters('resourceEnvironmentName')]"
+              },
+              {
+                "name": "AzureWebJobsStorage",
+                "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('sharedStorageAccountName'),';AccountKey=',listKeys(resourceId(parameters('sharedResourceGroupName'),'Microsoft.Storage/storageAccounts',parameters('sharedStorageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value, ';EndpointSuffix=core.windows.net')]"
+              },
+              {
+                "name": "FUNCTIONS_EXTENSION_VERSION",
+                "value": "~4"
+              },
+              {
+                "name": "FUNCTIONS_WORKER_RUNTIME",
+                "value": "dotnet-isolated"
+              },
+              {
+                "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                "value": "[reference(resourceId(parameters('sharedResourceGroupName'), 'microsoft.insights/components', parameters('sharedAppInsightsName')),'2015-05-01').InstrumentationKey]"
+              },
+              {
+                "name": "PdsApplicationInsights:InstrumentationKey",
+                "value": "[reference(resourceId(parameters('sharedResourceGroupName'), 'microsoft.insights/components', parameters('sharedAppInsightsName')),'2015-05-01').InstrumentationKey]"
+              },
+              {
+                "name": "Logging:ApplicationInsights:Loglevel:Default",
+                "value": "Information"
+              },
+              {
+                "name": "Logging:ApplicationInsights:Loglevel:Microsoft",
+                "value": "Error"
+              },
+              {
+                "name": "Logging:LogLevel:Default",
+                "value": "Information"
+              },
+              {
+                "name": "ServiceBusConnectionString",
+                "value": "[concat(listKeys(resourceId(parameters('sharedResourceGroupName'),'Microsoft.ServiceBus/namespaces/AuthorizationRules',parameters('sharedServiceBusName'), parameters('serviceBusAccessKeyName')),'2015-08-01').primaryConnectionString)]"
+              },
+              {
+                "name": "QueueName",
+                "value": "[parameters('queueName')]"
+              },
+              {
+                "name": "BaseSiteUrl",
+                "value": "[parameters('baseSiteUrl')]"
+              },
+              {
+                "name": "FundingApiSecretKey",
+                "value": "[concat('@Microsoft.KeyVault(VaultName=', parameters('sharedKeyVaultName'), ';SecretName=VyfUiApiConfigurationSecretKey)')]"
+              },
+              {
+                "name": "LayoutID_1619_General_General_AS-2122",
+                "value": "46790b3f-699f-4e74-96ed-f0ba6277881f"
+              },
+              {
+                "name": "LayoutID_1619_General_General_AS-2223",
+                "value": "4da79517-983a-458e-9fb7-b8281d818a21"
+              },
+              {
+                "name": "LayoutID_1619_General_General_AS-2324",
+                "value": "3aa76412-e7c2-42f8-917a-d98c7ecff8d8"
+              },
+              {
+                "name": "LayoutID_1619_General_General_AS-2425",
+                "value": "bc484d1b-837c-45c8-909e-c72412b24f81"
+              },
+              {
+                "name": "LayoutID_1619_General_General_AS-2526",
+                "value": "615c25bb-a221-4b7a-845c-1e6b7374c413"
+              },
+              {
+                "name": "LayoutID_1619_General_General_AS-2627",
+                "value": "d2616a1c-eb3b-4db9-b897-150f2edd685d"
+              },
+              {
+                "name": "LayoutID_1416_General_General_AS-2122",
+                "value": "72a45847-a8cf-4cc4-a03d-53464b6a009d"
+              },
+              {
+                "name": "LayoutID_1416_General_General_AY-2122",
+                "value": "72a45847-a8cf-4cc4-a03d-53464b6a009d"
+              },
+              {
+                "name": "LayoutID_1416_General_General_AY-2223",
+                "value": "72a45847-a8cf-4cc4-a03d-53464b6a009d"
+              },
+              {
+                "name": "LayoutID_1416_General_General_AY-2324",
+                "value": "72a45847-a8cf-4cc4-a03d-53464b6a009d"
+              },
+              {
+                "name": "LayoutID_1416_General_General_AY-2425",
+                "value": "b68a024b-20b3-47c6-a2e9-68f68c42f909"
+              },
+              {
+                "name": "LayoutID_1416_General_General_AY-2526",
+                "value": "82dec9cd-8d91-40c8-bcbc-c4d3cda5c33b"
+              },
+              {
+                "name": "LayoutID_1619_LocalAuthoritySsf_Contracting_AS-2122",
+                "value": "526a04e5-b01a-4a07-8947-7d9b28f2303e"
+              },
+              {
+                "name": "LayoutID_1619_LocalAuthoritySsf_Contracting_AS-2223",
+                "value": "526a04e5-b01a-4a07-8947-7d9b28f2303e"
+              },
+              {
+                "name": "LayoutID_1619_LocalAuthoritySsf_Contracting_AS-2324",
+                "value": "526a04e5-b01a-4a07-8947-7d9b28f2303e"
+              },
+              {
+                "name": "LayoutID_1619_LocalAuthoritySsf_Contracting_AS-2425",
+                "value": "4bb8e1ba-0a57-4fbb-97ab-4faef2340f4f"
+              },
+              {
+                "name": "LayoutID_1619_LocalAuthoritySsf_Contracting_AS-2526",
+                "value": "2d551507-a4cf-4c9a-a16c-b57746f7e29a"
+              },
+              {
+                "name": "LayoutID_1619_LocalAuthoritySsf_Contracting_AS-2627",
+                "value": "2d551507-a4cf-4c9a-a16c-b57746f7e29a"
+              },
+              {
+                "name": "LayoutID_1619_LocalAuthority_Contracting_AS-2122",
+                "value": "fed3e6b0-49d3-4f22-9c35-35a61a8fc997"
+              },
+              {
+                "name": "LayoutID_1619_LocalAuthority_Contracting_AS-2223",
+                "value": "fed3e6b0-49d3-4f22-9c35-35a61a8fc997"
+              },
+              {
+                "name": "LayoutID_1619_LocalAuthority_Contracting_AS-2324",
+                "value": "fed3e6b0-49d3-4f22-9c35-35a61a8fc997"
+              },
+              {
+                "name": "LayoutID_1619_LocalAuthority_Contracting_AS-2425",
+                "value": "f500c762-5c38-4c08-a04d-a12f1eb8fb79"
+              },
+              {
+                "name": "LayoutID_1619_LocalAuthority_Contracting_AS-2526",
+                "value": "5f8e8621-8ffc-46ad-b3f5-688889a1757f"
+              },
+              {
+                "name": "LayoutID_1619_LocalAuthority_Contracting_AS-2627",
+                "value": "5f8e8621-8ffc-46ad-b3f5-688889a1757f"
+              },
+              {
+                "name": "LayoutID_1619_LocalAuthority_Information_AS-2122",
+                "value": "963d6669-aa3a-4694-8adb-5661c67cbe01"
+              },
+              {
+                "name": "LayoutID_1619_LocalAuthority_Information_AS-2223",
+                "value": "963d6669-aa3a-4694-8adb-5661c67cbe01"
+              },
+              {
+                "name": "LayoutID_1619_LocalAuthority_Information_AS-2324",
+                "value": "963d6669-aa3a-4694-8adb-5661c67cbe01"
+              },
+              {
+                "name": "LayoutID_1619_LocalAuthority_Information_AS-2425",
+                "value": "963d6669-aa3a-4694-8adb-5661c67cbe01"
+              },
+              {
+                "name": "LayoutID_1619_LocalAuthority_Information_AS-2526",
+                "value": "45ffe00c-ee4b-47af-b552-5157af8a78db"
+              },
+              {
+                "name": "LayoutID_1619_LocalAuthority_Information_AS-2627",
+                "value": "45ffe00c-ee4b-47af-b552-5157af8a78db"
+              },
+              {
+                "name": "LayoutID_NMSS_General_General_AY-2122",
+                "value": "13f5d97c-d85f-44e9-87f6-acdd3498141f"
+              },
+              {
+                "name": "LayoutID_NMSS_General_General_AY-2223",
+                "value": "10bbf040-c00d-4170-8ce3-6f13c7d4c9c6"
+              },
+              {
+                "name": "LayoutID_NMSS_General_General_AY-2324",
+                "value": "9301ae02-1e6d-4732-a140-8eb1f460abbc"
+              },
+              {
+                "name": "LayoutID_NMSS_General_General_AY-2425",
+                "value": "9301ae02-1e6d-4732-a140-8eb1f460abbc"
+              },
+              {
+                "name": "LayoutID_NMSS_General_General_AY-2526",
+                "value": "db8a83e2-a08c-4872-b25b-d551ef7b2956"
+              },
+              {
+                "name": "LayoutID_NMSS_General_General_AY-2627",
+                "value": "db8a83e2-a08c-4872-b25b-d551ef7b2956"
+              },
+              {
+                "name": "LayoutID_NMSS_General_General_AS-2122",
+                "value": "13f5d97c-d85f-44e9-87f6-acdd3498141f"
+              },
+              {
+                "name": "LayoutID_GAG_General_General_AC-2122",
+                "value": "3080bace-4a9f-43cf-92ab-f77d63d20041"
+              },
+              {
+                "name": "LayoutID_GAG_General_General_AC-2223",
+                "value": "03caa621-186c-4ce5-9471-4539a8635e1c"
+              },
+              {
+                "name": "LayoutID_GAG_General_General_AC-2324",
+                "value": "a73237b1-2677-4035-bfd7-265ee55837df"
+              },
+              {
+                "name": "LayoutID_GAG_General_General_AC-2425",
+                "value": "5b2b22c4-1a97-4b0d-a0ba-ee1ff56e15a6"
+              },
+              {
+                "name": "LayoutID_GAG_General_General_AC-2526",
+                "value": "788bda59-c57e-4463-8d7e-040ab99d41e4"
+              },
+              {
+                "name": "LayoutID_GAG_General_General_AC-2627",
+                "value": "788bda59-c57e-4463-8d7e-040ab99d41e4"
+              },
+              {
+                "name": "FileName_LayoutID_1619_General_General_AS-2122",
+                "value": "UKPRN_10040_202122"
+              },
+              {
+                "name": "FileName_LayoutID_1619_General_General_AS-2223",
+                "value": "UKPRN_10040_202223"
+              },
+              {
+                "name": "FileName_LayoutID_1619_General_General_AS-2324",
+                "value": "UKPRN_10040_202324"
+              },
+              {
+                "name": "FileName_LayoutID_1619_General_General_AS-2425",
+                "value": "UKPRN_10040_202425"
+              },
+              {
+                "name": "FileName_LayoutID_1619_General_General_AS-2526",
+                "value": "UKPRN_10040_202526"
+              },
+              {
+                "name": "FileName_LayoutID_1619_General_General_AS-2627",
+                "value": "UKPRN_10040_202627"
+              },
+              {
+                "name": "FileName_LayoutID_1416_General_General_AS-2122",
+                "value": "UKPRN_10004_202122"
+              },
+              {
+                "name": "FileName_LayoutID_1416_General_General_AY-2122",
+                "value": "UKPRN_10004_202122"
+              },
+              {
+                "name": "FileName_LayoutID_1416_General_General_AY-2223",
+                "value": "UKPRN_10004_202223"
+              },
+              {
+                "name": "FileName_LayoutID_1416_General_General_AY-2324",
+                "value": "UKPRN_10004_202324"
+              },
+              {
+                "name": "FileName_LayoutID_1416_General_General_AY-2425",
+                "value": "UKPRN_10004_202425"
+              },
+              {
+                "name": "FileName_LayoutID_1416_General_General_AY-2526",
+                "value": "UKPRN_10004_202526"
+              },
+              {
+                "name": "FileName_LayoutID_1619_LocalAuthoritySsf_Contracting_AS-2122",
+                "value": "UKPRN_10010_202122"
+              },
+              {
+                "name": "FileName_LayoutID_1619_LocalAuthoritySsf_Contracting_AS-2223",
+                "value": "UKPRN_10010_202223"
+              },
+              {
+                "name": "FileName_LayoutID_1619_LocalAuthoritySsf_Contracting_AS-2324",
+                "value": "UKPRN_10010_202324"
+              },
+              {
+                "name": "FileName_LayoutID_1619_LocalAuthoritySsf_Contracting_AS-2425",
+                "value": "UKPRN_10010_202425"
+              },
+              {
+                "name": "FileName_LayoutID_1619_LocalAuthoritySsf_Contracting_AS-2526",
+                "value": "UKPRN_10010_202526"
+              },
+              {
+                "name": "FileName_LayoutID_1619_LocalAuthoritySsf_Contracting_AS-2627",
+                "value": "UKPRN_10010_202627"
+              },
+              {
+                "name": "FileName_LayoutID_1619_LocalAuthority_Contracting_AS-2122",
+                "value": "UKPRN_10010_202122"
+              },
+              {
+                "name": "FileName_LayoutID_1619_LocalAuthority_Contracting_AS-2223",
+                "value": "UKPRN_10010_202223"
+              },
+              {
+                "name": "FileName_LayoutID_1619_LocalAuthority_Contracting_AS-2324",
+                "value": "UKPRN_10010_202324"
+              },
+              {
+                "name": "FileName_LayoutID_1619_LocalAuthority_Contracting_AS-2425",
+                "value": "UKPRN_10010_202425"
+              },
+              {
+                "name": "FileName_LayoutID_1619_LocalAuthority_Contracting_AS-2526",
+                "value": "UKPRN_10010_202526"
+              },
+              {
+                "name": "FileName_LayoutID_1619_LocalAuthority_Contracting_AS-2627",
+                "value": "UKPRN_10010_202627"
+              },
+              {
+                "name": "FileName_LayoutID_1619_LocalAuthority_Information_AS-2122",
+                "value": "UKPRN_10007_202122"
+              },
+              {
+                "name": "FileName_LayoutID_1619_LocalAuthority_Information_AS-2223",
+                "value": "UKPRN_10007_202223"
+              },
+              {
+                "name": "FileName_LayoutID_1619_LocalAuthority_Information_AS-2324",
+                "value": "UKPRN_10007_202324"
+              },
+              {
+                "name": "FileName_LayoutID_1619_LocalAuthority_Information_AS-2425",
+                "value": "UKPRN_10007_202425"
+              },
+              {
+                "name": "FileName_LayoutID_1619_LocalAuthority_Information_AS-2526",
+                "value": "UKPRN_10007_202526"
+              },
+              {
+                "name": "FileName_LayoutID_1619_LocalAuthority_Information_AS-2627",
+                "value": "UKPRN_10007_202627"
+              },
+              {
+                "name": "FileName_LayoutID_NMSS_General_General_AS-2122",
+                "value": "UKPRN_10006_202122"
+              },
+              {
+                "name": "FileName_LayoutID_NMSS_General_General_AY-2122",
+                "value": "UKPRN_10006_202122"
+              },
+              {
+                "name": "FileName_LayoutID_NMSS_General_General_AY-2223",
+                "value": "UKPRN_10006_202223"
+              },
+              {
+                "name": "FileName_LayoutID_NMSS_General_General_AY-2324",
+                "value": "UKPRN_10006_202324"
+              },
+              {
+                "name": "FileName_LayoutID_NMSS_General_General_AY-2425",
+                "value": "UKPRN_10006_202425"
+              },
+              {
+                "name": "FileName_LayoutID_NMSS_General_General_AY-2526",
+                "value": "UKPRN_10006_202526"
+              },
+              {
+                "name": "FileName_LayoutID_NMSS_General_General_AY-2627",
+                "value": "UKPRN_10006_202627"
+              },
+              {
+                "name": "FileName_LayoutID_GAG_General_General_AC-2526",
+                "value": "UKPRN_CODE_202526"
+              },
+              {
+                "name": "FileName_LayoutID_GAG_General_General_AC-2627",
+                "value": "UKPRN_CODE_202627"
+              },
+              {
+                "name": "FileName_LayoutID_GAG_General_General_AC-2425",
+                "value": "UKPRN_CODE_202425"
+              },
+              {
+                "name": "FileName_LayoutID_GAG_General_General_AC-2324",
+                "value": "UKPRN_CODE_202324"
+              },
+              {
+                "name": "FileName_LayoutID_GAG_General_General_AC-2223",
+                "value": "UKPRN_CODE_202223"
+              },
+              {
+                "name": "FileName_LayoutID_GAG_General_General_AC-2122",
+                "value": "UKPRN_CODE_202122"
+              },
+              {
+                "name": "NonRelationalDb_CosmosDbConfiguration_ConnectionString",
+                "value": "[listConnectionStrings(resourceId(parameters('sharedResourceGroupName'),'Microsoft.DocumentDB/databaseAccounts', parameters('sharedCosmosDbName')), '2019-12-12').connectionStrings[0].connectionString]"
+              },
+              {
+                "name": "NonRelationalDb_CosmosDbConfiguration_DatabaseName",
+                "value": "funding"
+              },
+              {
+                "name": "NonRelationalDb_CosmosDbConfiguration_LayoutCollection",
+                "value": "layout"
+              },
+              {
+                "name": "NonRelationalDb_CosmosDbConfiguration_FundingCollection",
+                "value": "[parameters('nonRelationalDbCosmosDbConfigurationFundingCollection')]"
+              },
+              {
+                "name": "NonRelationalDb_CosmosDbConfiguration_ProviderFundingCollection",
+                "value": "[parameters('nonRelationalDbCosmosDbConfigurationProviderFundingCollection')]"
+              },
+              {
+                "name": "Auditing_CosmosDbConfiguration_ConnectionString",
+                "value": "[listConnectionStrings(resourceId(parameters('sharedResourceGroupName'),'Microsoft.DocumentDB/databaseAccounts', parameters('sharedCosmosDbName')), '2019-12-12').connectionStrings[0].connectionString]"
+              },
+              {
+                "name": "Auditing_CosmosDbConfiguration_DatabaseName",
+                "value": "funding"
+              },
+              {
+                "name": "Auditing_CosmosDbConfiguration_CollectionName",
+                "value": "audit"
+              },
+              {
+                "name": "DestinationStorage",
+                "value": "[parameters('destinationStorage')]"
+              },
+              {
+                "name": "BlobStorage_ConnectionString",
+                "value": "[parameters('blobStorage_ConnectionString')]"
+              },
+              {
+                "name": "BlobStorage_ContainerName",
+                "value": "[parameters('blobStorage_ContainerName')]"
+              },
+              {
+                "name": "OneDrive_ClientId",
+                "value": "[parameters('oneDrive_ClientId')]"
+              },
+              {
+                "name": "OneDrive_ClientSecret",
+                "value": "[parameters('oneDrive_ClientSecret')]"
+              },
+              {
+                "name": "OneDrive_RefreshToken",
+                "value": "[parameters('oneDrive_RefreshToken')]"
+              },
+              {
+                "name": "OneDrive_RootPath",
+                "value": "[parameters('oneDrive_RootPath')]"
+              },
+              {
+                "name": "OneDrive_RedirectUri",
+                "value": "[parameters('oneDrive_RedirectUri')]"
+              },
+              {
+                "name": "OneDrive_AuthorityUri",
+                "value": "https://login.microsoftonline.com/common/oauth2/v2.0/token]"
+              },
+              {
+                "name": "OneDrive_BaseUri",
+                "value": "https://graph.microsoft.com/v1.0"
+              },
+              {
+                "name": "FileRepoStorage_ConnectionString",
+                "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('sharedStorageAccountName'),';AccountKey=',listKeys(resourceId(parameters('sharedResourceGroupName'),'Microsoft.Storage/storageAccounts',parameters('sharedStorageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value, ';EndpointSuffix=core.windows.net')]"
+              },
+              {
+                "name": "FileRepoStorageName_Internal",
+                "value": "viewyourfundingpdfstatementbackup"
+              },
+              {
+                "name": "FileRepoStorageName_Business",
+                "value": "viewyourfundingpdfstatement"
+              },
+              {
+                "name": "DocumentGeneratorScheduleTriggerTime",
+                "value": "[parameters('documentGeneratorScheduleTriggerTime')]"
+              },
+              {
+                "name": "FilteredFundingStreams_Fundings",
+                "value": "[parameters('filteredFundingStreamsFundings')]"
+              },
+              {
+                "name": "Filtered_FundingGroupReasonsTypeCodes",
+                "value": "[parameters('filteredFundingReasonGroupTypeCodes')]"
+              },
+              {
+                "name": "FilteredVariations_Funding",
+                "value": "[parameters('filteredVariationsFunding')]"
+              },
+              {
+                "name": "FilteredFundingStreams_ProviderFundings",
+                "value": "[parameters('filteredFundingStreamsProviderFundings')]"
+              },
+              {
+                "name": "FilteredVariations_ProviderFundings",
+                "value": "[parameters('filteredVariationsProviderFundings')]"
+              },
+              {
+                "name": "Parallel_Run_Batch_Size",
+                "value": "[parameters('parallelRunBatchSize')]"
+              },
+              {
+                "name": "Processing_Batch_Size",
+                "value": "[parameters('processingBatchSize')]"
+              },
+              {
+                "name": "FileRepoStorage_Compare_ConnectionString",
+                "value": "[concat('@Microsoft.KeyVault(SecretUri=', reference(resourceId(parameters('sharedResourceGroupName'),'Microsoft.KeyVault/vaults/secrets', parameters('sharedKeyVaultName'),parameters('keyVaultSecretName')),'2018-02-14').secretUriWithVersion, ')')]"
+              },
+              {
+                "name": "Processing_Run_Size_Comparison",
+                "value": "[parameters('processingRunSizeComparison')]"
+              },
+              {
+                "name": "IndicativeProviderStatusList",
+                "value": "Proposed to open,Pending approval"
+              },
+              {
+                "name": "IndicativeGroupingReason",
+                "value": "Indicative"
+              },
+              {
+                "name": "FileName_LayoutID_1619_Indicative_Indicative_AS-2122",
+                "value": "UKPRN_10040_202122"
+              },
+              {
+                "name": "FileName_LayoutID_GAG_Indicative_Indicative_AC-2122",
+                "value": "UKPRN_CODE_202122"
+              },
+              {
+                "name": "FileName_LayoutID_GAG_Indicative_Indicative_AC-2223",
+                "value": "UKPRN_CODE_202223"
+              },
+              {
+                "name": "FileName_LayoutID_GAG_Indicative_Indicative_AC-2324",
+                "value": "UKPRN_CODE_202324"
+              },
+              {
+                "name": "FileName_LayoutID_GAG_Indicative_Indicative_AC-2425",
+                "value": "UKPRN_CODE_202425"
+              },
+              {
+                "name": "FileName_LayoutID_GAG_Indicative_Indicative_AC-2526",
+                "value": "UKPRN_CODE_202526"
+              },
+              {
+                "name": "FileName_LayoutID_GAG_Indicative_Indicative_AC-2627",
+                "value": "UKPRN_CODE_202627"
+              },
+              {
+                "name": "LayoutID_1619_Indicative_Indicative_AS-2122",
+                "value": "da7f1a86-d288-43e7-8bc4-82113830bf0b"
+              },
+              {
+                "name": "LayoutID_GAG_Indicative_Indicative_AC-2122",
+                "value": "058e5b82-a34c-4c88-b2a1-9461c35cf2b9"
+              },
+              {
+                "name": "LayoutID_GAG_Indicative_Indicative_AC-2223",
+                "value": "ad92d448-5990-400d-8ef6-a36b53d16207"
+              },
+              {
+                "name": "LayoutID_GAG_Indicative_Indicative_AC-2324",
+                "value": "0b458fac-623c-4183-9f1c-c7e8e4a1340b"
+              },
+              {
+                "name": "LayoutID_GAG_Indicative_Indicative_AC-2425",
+                "value": "f3294c7c-85a8-4a81-aef5-94105ea55b49"
+              },
+              {
+                "name": "LayoutID_GAG_Indicative_Indicative_AC-2526",
+                "value": "d1adb61f-c418-4df2-850b-ab6d1acd44d3"
+              },
+              {
+                "name": "LayoutID_GAG_Indicative_Indicative_AC-2627",
+                "value": "d1adb61f-c418-4df2-850b-ab6d1acd44d3"
+              },
+              {
+                "name": "LayoutID_PNA_General_General_AC-2122",
+                "value": "5ed12204-857a-4ead-8b28-adff4999011b"
+              },
+              {
+                "name": "FileName_LayoutID_PNA_General_General_AC-2122",
+                "value": "UKPRN_10051_202122"
+              },
+              {
+                "name": "LayoutID_PNA_General_General_AC-2223",
+                "value": "5ed12204-857a-4ead-8b28-adff4999011b"
+              },
+              {
+                "name": "FileName_LayoutID_PNA_General_General_AC-2223",
+                "value": "UKPRN_10051_202223"
+              },
+              {
+                "name": "LayoutID_PNA_General_General_AC-2324",
+                "value": "5ed12204-857a-4ead-8b28-adff4999011b"
+              },
+              {
+                "name": "FileName_LayoutID_PNA_General_General_AC-2324",
+                "value": "UKPRN_10051_202324"
+              },
+              {
+                "name": "LayoutID_PNA_General_General_AC-2425",
+                "value": "6406b0eb-451f-4429-b015-24c3de669325"
+              },
+              {
+                "name": "FileName_LayoutID_PNA_General_General_AC-2425",
+                "value": "UKPRN_10051_202425"
+              },
+              {
+                "name": "LayoutID_PNA_General_General_AC-2526",
+                "value": "6406b0eb-451f-4429-b015-24c3de669325"
+              },
+              {
+                "name": "FileName_LayoutID_PNA_General_General_AC-2526",
+                "value": "UKPRN_10051_202526"
+              },
+              {
+                "name": "LayoutID_LAREC_General_General_FY-2223",
+                "value": "c59b4093-31dc-4544-a1f8-91951c168f7d"
+              },
+              {
+                "name": "FileName_LayoutID_LAREC_General_General_FY-2223",
+                "value": "LACODE - LANAME Recoupment Report"
+              },
+              {
+                "name": "FileType_LayoutID_LAREC_General_General_FY-2223",
+                "value": "ods"
+              },
+              {
+                "name": "LayoutID_LAREC_General_General_FY-2324",
+                "value": "72108c12-bd60-4b05-a876-f1eb0b5b49e2"
+              },
+              {
+                "name": "FileName_LayoutID_LAREC_General_General_FY-2324",
+                "value": "LACODE - LANAME Recoupment Report"
+              },
+              {
+                "name": "FileType_LayoutID_LAREC_General_General_FY-2324",
+                "value": "ods"
+              },
+              {
+                "name": "LayoutID_LAREC_General_General_FY-2425",
+                "value": "b2413e39-a590-4c6d-a401-315da2ed4bbd"
+              },
+              {
+                "name": "FileName_LayoutID_LAREC_General_General_FY-2425",
+                "value": "LACODE - LANAME Recoupment Report"
+              },
+              {
+                "name": "FileType_LayoutID_LAREC_General_General_FY-2425",
+                "value": "ods"
+              },
+              {
+                "name": "LayoutID_LAREC_General_General_FY-2526",
+                "value": "131c5e32-8130-49d6-9fd7-5dfb444e7a98"
+              },
+              {
+                "name": "FileName_LayoutID_LAREC_General_General_FY-2526",
+                "value": "LACODE - LANAME Recoupment Report"
+              },
+              {
+                "name": "FileType_LayoutID_LAREC_General_General_FY-2526",
+                "value": "ods"
+              },
+              {
+                "name": "LayoutID_LAREC_General_General_FY-2627",
+                "value": "131c5e32-8130-49d6-9fd7-5dfb444e7a98"
+              },
+              {
+                "name": "FileName_LayoutID_LAREC_General_General_FY-2627",
+                "value": "LACODE - LANAME Recoupment Report"
+              },
+              {
+                "name": "FileType_LayoutID_LAREC_General_General_FY-2627",
+                "value": "ods"
+              },
+              {
+                "name": "FileName_LayoutID_1619_Indicative_Indicative_AS-2223",
+                "value": "UKPRN_10040_202223"
+              },
+              {
+                "name": "LayoutID_1619_Indicative_Indicative_AS-2223",
+                "value": "da7f1a86-d288-43e7-8bc4-82113830bf0b"
+              },
+              {
+                "name": "FileName_LayoutID_1619_Indicative_Indicative_AS-2324",
+                "value": "UKPRN_10040_202324"
+              },
+              {
+                "name": "FileName_LayoutID_1619_Indicative_Indicative_AS-2425",
+                "value": "UKPRN_10040_202425"
+              },
+              {
+                "name": "FileName_LayoutID_1619_Indicative_Indicative_AS-2526",
+                "value": "UKPRN_10040_202526"
+              },
+              {
+                "name": "FileName_LayoutID_1619_Indicative_Indicative_AS-2627",
+                "value": "UKPRN_10040_202627"
+              },
+              {
+                "name": "LayoutID_1619_Indicative_Indicative_AS-2324",
+                "value": "cfeffd0d-b27f-4adf-976c-32642cc5d801"
+              },
+              {
+                "name": "LayoutID_1619_Indicative_Indicative_AS-2425",
+                "value": "676fdd18-51fb-4e73-80ef-a5e258f4c7b0"
+              },
+              {
+                "name": "LayoutID_1619_Indicative_Indicative_AS-2526",
+                "value": "47c9dd56-a6fa-4615-a3e5-654e8431e15a"
+              },
+              {
+                "name": "LayoutID_1619_Indicative_Indicative_AS-2627",
+                "value": "4db1f1e5-1219-4bb3-bcf5-40df22a30299"
+              }
+            ]
+          }
+        }
+      },
+      "dependsOn": [
+        "app-service-plan"
+      ]
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "Deploy_KeyVault_Policies",
+      "type": "Microsoft.Resources/deployments",
+      "resourceGroup": "[parameters('sharedResourceGroupName')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'keyvault-accesspolicies.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "accessPolicies": {
+            "value": [
+              {
+                "tenantId": "[subscription().tenantId]",
+                "objectId": "[reference('function-app').outputs.managedServiceIdentityId.value]",
+                "permissions": {
+                  "secrets": "[parameters('secretsPermissions')]"
+                }
+              }
+            ]
+          },
+          "KeyVaultName": {
+            "value": "[parameters('sharedKeyVaultName')]"
+          }
+        }
+      },
+      "dependsOn": [
+        "function-app"
+      ]
+    }
+  ],
+  "outputs": {
+    "FunctionAppName": {
+      "type": "string",
+      "value": "[variables('functionAppName')]"
+    }
+  }
+}

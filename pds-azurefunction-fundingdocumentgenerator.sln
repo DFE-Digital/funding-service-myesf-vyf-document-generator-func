@@ -1,0 +1,62 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29728.190
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PDS.ViewYourFunding.PDFGenerator.FunctionApp", "pds-azurefunction-fundingdocumentgenerator\PDS.ViewYourFunding.DocumentGenerator.FunctionApp.csproj", "{A3B3A264-0285-486F-ACEB-DAD7EF12D7A8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{72698A53-17B0-4E32-B999-343889A7ED0D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PDS.ViewYourFunding.PDFGenerator.FunctionApp.Tests", "pds-azurefunction-fundingdocumentgenerator.Tests\PDS.ViewYourFunding.DocumentGenerator.FunctionApp.Tests.csproj", "{22B35213-126E-4CDB-80BE-989BB157129E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PDS.ViewYourFunding.PDFGenerator.Services", "PDS.ViewYourFunding.DocumentGenerator.Services\PDS.ViewYourFunding.DocumentGenerator.Services.csproj", "{5446B9BD-2F09-4064-9FD0-7586A4166C58}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PDS.ViewYourFunding.PDFGenerator.Services.Tests", "PDS.ViewYourFunding.DocumentGenerator.Services.Tests\PDS.ViewYourFunding.DocumentGenerator.Services.Tests.csproj", "{56E704EB-28D1-45F9-A2CD-E39E340CB68C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PDS.ViewYourFunding.PDFGenerator.Repositories", "PDS.ViewYourFunding.DocumentGenerator.Repositories\PDS.ViewYourFunding.DocumentGenerator.Repositories.csproj", "{ABDDF4FD-6DD0-446C-B2C4-16491DA7E565}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PDS.ViewYourFunding.PDFGenerator.Repositories.Tests", "PDS.ViewYourFunding.DocumentGenerator.Repositories.Tests\PDS.ViewYourFunding.DocumentGenerator.Repositories.Tests.csproj", "{F76FDC2D-CDC2-40B8-A147-84C0297F02FD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A3B3A264-0285-486F-ACEB-DAD7EF12D7A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3B3A264-0285-486F-ACEB-DAD7EF12D7A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3B3A264-0285-486F-ACEB-DAD7EF12D7A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3B3A264-0285-486F-ACEB-DAD7EF12D7A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{22B35213-126E-4CDB-80BE-989BB157129E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22B35213-126E-4CDB-80BE-989BB157129E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22B35213-126E-4CDB-80BE-989BB157129E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22B35213-126E-4CDB-80BE-989BB157129E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5446B9BD-2F09-4064-9FD0-7586A4166C58}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5446B9BD-2F09-4064-9FD0-7586A4166C58}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5446B9BD-2F09-4064-9FD0-7586A4166C58}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5446B9BD-2F09-4064-9FD0-7586A4166C58}.Release|Any CPU.Build.0 = Release|Any CPU
+		{56E704EB-28D1-45F9-A2CD-E39E340CB68C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56E704EB-28D1-45F9-A2CD-E39E340CB68C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56E704EB-28D1-45F9-A2CD-E39E340CB68C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56E704EB-28D1-45F9-A2CD-E39E340CB68C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ABDDF4FD-6DD0-446C-B2C4-16491DA7E565}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ABDDF4FD-6DD0-446C-B2C4-16491DA7E565}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ABDDF4FD-6DD0-446C-B2C4-16491DA7E565}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ABDDF4FD-6DD0-446C-B2C4-16491DA7E565}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F76FDC2D-CDC2-40B8-A147-84C0297F02FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F76FDC2D-CDC2-40B8-A147-84C0297F02FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F76FDC2D-CDC2-40B8-A147-84C0297F02FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F76FDC2D-CDC2-40B8-A147-84C0297F02FD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{22B35213-126E-4CDB-80BE-989BB157129E} = {72698A53-17B0-4E32-B999-343889A7ED0D}
+		{56E704EB-28D1-45F9-A2CD-E39E340CB68C} = {72698A53-17B0-4E32-B999-343889A7ED0D}
+		{F76FDC2D-CDC2-40B8-A147-84C0297F02FD} = {72698A53-17B0-4E32-B999-343889A7ED0D}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7A1ECE16-CEAC-47E9-A071-D9724D0E609A}
+	EndGlobalSection
+EndGlobal

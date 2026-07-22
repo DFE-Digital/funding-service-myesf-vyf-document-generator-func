@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <AssemblyName>PDS.ViewYourFunding.DocumentGenerator.Repositories</AssemblyName>
+    <RootNamespace>PDS.ViewYourFunding.DocumentGenerator.Repositories</RootNamespace>
+  </PropertyGroup>
+	<PropertyGroup>
+		<ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+	</PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.60.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+    <PackageReference Include="Pds.Core.CodeAnalysis.StyleCop" Version="2.0.0" />
+	<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.3" />
+	<PackageReference Include="Pds.Core.Logging" Version="3.0.0" />
+  </ItemGroup>
+
+</Project>
